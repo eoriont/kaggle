@@ -29,7 +29,7 @@ age_nan = df['Age'].apply(lambda entry: np.isnan(entry))
 age_not_nan = df['Age'].apply(lambda entry: not np.isnan(entry))
 
 # Set each nil column to the mean age
-df['Age'][age_nan] = df['Age'][age_not_nan].mean()
+df.loc[age_nan, ['Age']] = df['Age'][age_not_nan].mean()
 
 # SibSp
 def indicator_greater_than_zero(x):

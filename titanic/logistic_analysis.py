@@ -82,63 +82,66 @@ features_to_use = ['Sex', 'Pclass', 'Fare', 'Age', 'SibSp', 'SibSp>0', 'Parch>0'
 columns_needed = ['Survived'] + features_to_use
 df = df[columns_needed]
 
-#print(df.columns)
 
-# split into training/testing dataframes
-df_train = df[:500]
-df_test = df[500:]
+def get_df_accuracy(df):
+    # split into training/testing dataframes
+    df_train = df[:500]
+    df_test = df[500:]
 
-arr_train = np.array(df_train)
-arr_test = np.array(df_test)
+    arr_train = np.array(df_train)
+    arr_test = np.array(df_test)
 
-y_train = arr_train[:,0]
-y_test = arr_test[:,0]
+    y_train = arr_train[:,0]
+    y_test = arr_test[:,0]
 
-X_train = arr_train[:,1:]
-X_test = arr_test[:,1:]
+    X_train = arr_train[:,1:]
+    X_test = arr_test[:,1:]
 
-regressor = LogisticRegression(max_iter=400)
-regressor.fit(X_train, y_train)
+    regressor = LogisticRegression(max_iter=10000)
+    regressor.fit(X_train, y_train)
 
-coef_dict = {}
-feature_columns = df_train.columns[1:]
-feature_coefficients = regressor.coef_
-for i in range(len(feature_columns)):
-    column = feature_columns[i]
+    coef_dict = {}
+    feature_columns = df_train.columns[1:]
+    feature_coefficients = regressor.coef_
+    for i in range(len(feature_columns)):
+        column = feature_columns[i]
 
-    # This returns an array with the coefficient array inside for some reason
-    coefficient = feature_coefficients[0][i]
+        # This returns an array with the coefficient array inside for some reason
+        coefficient = feature_coefficients[0][i]
 
-    coef_dict[column] = coefficient
+        coef_dict[column] = coefficient
 
-y_test_predictions = regressor.predict(X_test)
-y_train_predictions = regressor.predict(X_train)
+    y_test_predictions = regressor.predict(X_test)
+    y_train_predictions = regressor.predict(X_train)
 
-def convert_regressor_output_to_survival_value(output):
-    if output < 0.5:
-        return 0
-    else:
-        return 1
-
-y_test_predictions = [convert_regressor_output_to_survival_value(output) for output in y_test_predictions]
-y_train_predictions = [convert_regressor_output_to_survival_value(output) for output in y_train_predictions]
-
-def get_accuracy(predictions, actual):
-    num_correct = 0
-    num_incorrect = 0
-    for i in range(len(predictions)):
-        if predictions[i] == actual[i]:
-            num_correct += 1
+    def convert_regressor_output_to_survival_value(output):
+        if output < 0.5:
+            return 0
         else:
-            num_incorrect += 1
+            return 1
 
-    return num_correct / (num_correct + num_incorrect)
+    y_test_predictions = [convert_regressor_output_to_survival_value(output) for output in y_test_predictions]
+    y_train_predictions = [convert_regressor_output_to_survival_value(output) for output in y_train_predictions]
 
-print('\n')
-print('features:', features_to_use)
-print('')
-print('training accuracy:',get_accuracy(y_train_predictions, y_train))
-print('testing accuracy:',get_accuracy(y_test_predictions, y_test))
-print('')
-coef_dict['constant'] = regressor.intercept_[0]
-print({k: round(v,4) for k,v in coef_dict.items()})
+    def get_accuracy(predictions, actual):
+        num_correct = 0
+        num_incorrect = 0
+        for i in range(len(predictions)):
+            if predictions[i] == actual[i]:
+                num_correct += 1
+            else:
+                num_incorrect += 1
+
+        return num_correct / (num_correct + num_incorrect)
+
+    print('\n')
+    print('features:', len(df.columns))
+    print('')
+    print('training accuracy:',get_accuracy(y_train_predictions, y_train))
+    print('testing accuracy:',get_accuracy(y_test_predictions, y_test))
+    print('')
+    coef_dict['constant'] = regressor.intercept_[0]
+    # print({k: round(v,4) for k,v in coef_dict.items()})
+
+if __name__ == "__main__":
+    get_df_accuracy(df)

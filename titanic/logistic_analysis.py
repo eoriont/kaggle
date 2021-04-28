@@ -82,7 +82,7 @@ def train_regressor(df):
     y_arr = arr[:,0]
     X_arr = arr[:,1:]
 
-    regressor = LogisticRegression(max_iter=10)
+    regressor = LogisticRegression(max_iter=1000)
     regressor.fit(X_arr, y_arr)
 
     coef_dict = {}
@@ -95,6 +95,7 @@ def train_regressor(df):
         coefficient = feature_coefficients[0][i]
 
         coef_dict[column] = coefficient
+    return regressor
 
 def get_regressor_accuracy(df, regressor):
     arr = np.array(df)
@@ -127,8 +128,8 @@ def get_accuracy(predictions, actual):
 if __name__ == "__main__":
     # split into training/testing dataframes
     reg = train_regressor(df[:500])
-    train = get_regressor_accuracy(df[:500])
-    test = get_regressor_accuracy(df[500:])
+    train = get_regressor_accuracy(df[:500], reg)
+    test = get_regressor_accuracy(df[500:], reg)
 
     print('\n')
     print('features:', len(df.columns))

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 import os
 
 
@@ -18,26 +18,16 @@ df["bachelor"] = df["parental level of education"].apply(lambda entry: 1 if entr
 df["some college"] = df["parental level of education"].apply(lambda entry: 1 if entry == "some college" else 0)
 df["master"] = df["parental level of education"].apply(lambda entry: 1 if entry == "master's degree" else 0)
 df["associate"] = df["parental level of education"].apply(lambda entry: 1 if entry == "associate's degree" else 0)
-df["high school"] = df["parental level of education"].apply(lambda entry: 1 if entry in ("high school", "some high school") else 0)
+df["high school"] = df["parental level of education"].apply(lambda entry: 1 if entry == "high school" else 0)
+df["some high school"] = df["parental level of education"].apply(lambda entry: 1 if entry == "some high school" else 0)
 
 def train_regressor(df):
     arr = np.array(df)
     y_arr = arr[:,0]
     X_arr = arr[:,1:]
 
-    regressor = LogisticRegression(max_iter=10000)
+    regressor = LinearRegression()
     regressor.fit(X_arr, y_arr)
-
-    coef_dict = {}
-    feature_columns = df.columns[1:]
-    feature_coefficients = regressor.coef_
-    for i in range(len(feature_columns)):
-        column = feature_columns[i]
-
-        # This returns an array with the coefficient array inside for some reason
-        coefficient = feature_coefficients[0][i]
-
-        coef_dict[column] = coefficient
 
     return regressor
 
@@ -51,8 +41,8 @@ if __name__ == "__main__":
 
     print("Problem D", len(unique_pared))
 
-    cols_to_keep = ["math score", "no testprep", "testprep", "bachelor", "some college", "master", "associate", "high school"]
+    cols_to_keep = ["math score", "no testprep", "testprep", "bachelor", "some college", "master", "associate", "high school", "some high school"]
     df = df[cols_to_keep]
     reg = train_regressor(df[:-3])
 
-    print(reg.predict(df[cols_to_keep[1:]][-3:]))
+    print("Problem E", reg.predict(df[cols_to_keep[1:]][-3:]))

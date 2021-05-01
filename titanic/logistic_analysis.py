@@ -77,12 +77,12 @@ features_to_use = ['Sex', 'Pclass', 'Fare', 'Age', 'SibSp', 'SibSp>0', 'Parch>0'
 columns_needed = ['Survived'] + features_to_use
 df = df[columns_needed]
 
-def train_regressor(df):
+def train_regressor(df, max_iter=1000):
     arr = np.array(df)
     y_arr = arr[:,0]
     X_arr = arr[:,1:]
 
-    regressor = LogisticRegression(max_iter=1000)
+    regressor = LogisticRegression(max_iter=max_iter)
     regressor.fit(X_arr, y_arr)
 
     coef_dict = {}

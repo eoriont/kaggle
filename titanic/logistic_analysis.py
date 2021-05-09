@@ -82,19 +82,9 @@ def train_regressor(df, max_iter=1000):
     y_arr = arr[:,0]
     X_arr = arr[:,1:]
 
-    regressor = LogisticRegression(max_iter=max_iter)
+    regressor = LogisticRegression(max_iter=max_iter, random_state=0)
     regressor.fit(X_arr, y_arr)
 
-    coef_dict = {}
-    feature_columns = df.columns[1:]
-    feature_coefficients = regressor.coef_
-    for i in range(len(feature_columns)):
-        column = feature_columns[i]
-
-        # This returns an array with the coefficient array inside for some reason
-        coefficient = feature_coefficients[0][i]
-
-        coef_dict[column] = coefficient
     return regressor
 
 def get_regressor_accuracy(df, regressor):
